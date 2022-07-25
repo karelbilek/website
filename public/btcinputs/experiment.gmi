@@ -1,0 +1,39 @@
+```js
+// run cat /path/to/blocks/blk* | node experiment.js > out
+// note: it appends stats for sanity checking every 10k blocks, see below
+
+var BlockStream = require('blkdat-stream')
+var blockStream = new BlockStream()
+var bitcoin = require('bitcoinjs-lib')
+
+var i = 0
+var res = {}
+process.stdin.pipe(new BlockStream()).on('data', function (blockBuffer) {
+    i++
+    const block = bitcoin.Block.fromBuffer(blockBuffer)
+    const ydiff = (new Date() - new Date(block.timestamp*1000)) / (1000 * 60 * 60 * 24 * 365)
+
+    if (ydiff <= 2) {
+
+        block.transactions.forEach(tx => {
+            if (!tx.isCoinbase()) {
+                tx.ins.forEach(inp => {
+                    const type = bitcoin.script.classifyInput(inp.script);
+                    var scr = type + "," + inp.script.length
+                    res[scr] = (res[scr] || 0) + 1
+                })
+            }
+        })
+
+        // I wrote it like this for sanity checking and because I don't know
+        // how to detect the end of the blocks :)
+        // It doesn't matter though, good enough
+        if (i%10000 === 0) {
+            console.log("---------------------")
+            var types = Object.keys(res).sort((a, b) => (res[b] - res[a]))
+            types.map(typ => typ + "," + res[typ]).forEach(k => console.log(k))
+        }
+
+    }
+})
+```

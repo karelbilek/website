@@ -1,0 +1,50 @@
+# I proudly use labels with go loops
+
+2021-11-16
+
+Every time I mention this to other gophers, I got ugly looks. For whatever reason, labels are shunned in go land.
+
+But I just think that cleanly naming the loop you are breaking/continuing is *always* more readable? See these two examples
+
+```
+    for i := 0; i <= MAX_TRIES; i++ {
+        if whatever {
+            if err := doSomething(); err != nil {
+                return nil, fmt.Errorf("oopsie woopsie: %w", err)
+            }
+        }
+
+        // more logic
+        if someCondition {
+            if anotherCondition(foo) {
+                continue
+            }
+        }
+    }
+```
+
+vs
+
+```
+TRY:
+    for i := 0; i <= MAX_TRIES; i++ {
+        if whatever {
+            if err := doSomething(); err != nil {
+                return nil, fmt.Errorf("oopsie woopsie: %w", err)
+            }
+        }
+
+        // more logic
+        if someCondition {
+            if anotherCondition(foo) {
+                continue TRY
+            }
+        }
+    }
+```
+
+In my opinion, the second example is strictly always more readable.
+
+And sure, the purists might say "well just rewrite to another function and use return there". Well, sometimes, that is just not worth the effort.
+
+Eh, just my 2 cents.

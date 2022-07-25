@@ -1,0 +1,166 @@
+# Pirate bay archive
+
+2013-02-01
+
+NOTE: This is here just for archiving purposes, written in 2013.
+
+I don't condone piracy anymore in 2021, but I am still kind of proud of the work, even when, looking back as an older Karel on young Karel, it was just a dumb scrape, plus some R experiments, and the code was quite horrible. Eh, oh well. It still got me #1 on Hacker News in 2013!
+
+Update, 2014: As of December 2014, The Pirate Bay is down and people started to write me, if I don't have any updated version. I don't. Slightly more (july 2013) updated versions of TPB (and in CSV - probably easier to parse) are on those github repositories (not made by me; note that "info hash" and "magnet" are the same thing):
+
+=> https://github.com/tpb-archive/3xxxxxx
+=> https://github.com/tpb-archive/4xxxxxx
+=> https://github.com/tpb-archive/5xxxxxx
+=> https://github.com/tpb-archive/6xxxxxx
+=> https://github.com/tpb-archive/7xxxxxx
+=> https://github.com/tpb-archive/8xxxxxx
+
+The same stuff is in this archive (without the 8xx torrents)
+
+=> https://archive.org/details/Backup_of_The_Pirate_Bay_32xxxxx-to-79xxxxx
+
+and here
+
+=> magnet:?xt=urn:btih:0dfe31d5d91058bcbe5cfbcf98646700890afea0&dn=Backup+of+The+Pirate+Bay+%28IDs%3A+3200000+-+7700000%29&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.istole.it%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337 magnet link
+
+I am not aware of anything newer. Andronikov stopped existing after uploading the latest version of TPB in 10 2013 (magnet), unfortunately that magnet has 0 seeders.
+
+=> magnet:?xt=urn:btih:169d2422f15ea6aa33dac5737ee6189d29a0e5d1&dn=+Backup+of+The+Pirate+Bay+%28IDs%3A+8000000+-+8999999%29+&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.istole.it%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337 magnet link
+
+# Original article
+
+original article, from February 2013 (with working links)
+
+Note: Some people noticed that the XML files are not well-formed and valid. I have corrected that, see the bottom.
+
+Some time ago, I did an experiment on how small I can make all pirate bay while keeping the important information. People apparently liked it and it got *way* more popular than I expected.
+
+=> http://thepiratebay.se/torrent/7016365/The_whole_Pirate_Bay_magnet_archive PB link
+
+Well, now some months later, I wanted to do two things - first, make it even smaller and correct all the mistakes I did before. Second - I wanted to create another version that will have all the additional metadata - most importantly, *all* the comments and text information. For me, pirate bay is not just the torrents, but mainly the additional information - how fake is the file? What can I really expect inside?
+
+So I did both.
+
+=> https://thepiratebay.org/description.php?id=8156416 The "smaller" file is for download here
+
+It has 76 MB 7zipped and it really has just names and magnet links.
+
+=> https://thepiratebay.org/description.php?id=8163015 The "bigger" file is for download here.
+
+In 631 MB 7zipped, it has all the information about number of seeders, leechers (at the time of the download), magnet links, descriptions, size, and perhaps most importantly - comments. It does not contain the "big" torrent files.
+
+Note: since the downloading itself took quite long, the data in the older torrents can be slightly out of date.
+
+## How I did it
+
+With the script below that walks through the torrents one by one. Unlike the last time, this time I decided to output XML so people parsing it won't get it so crazy. Of course, I messed up the XML again; see the bottom.
+
+=> script.gmi
+
+Unfortunately, Pirate Bay always started blocking my computers (I guess they thought I am DDoSing them or something), so I had to switch from computer to computer. And because I wanted to make sure I really didn't miss any torrent, the whole thing took about 6 months. (...yep.)
+
+Also, PirateBay had some downtimes during the download. I tried to "catch" them, but I still lost about 100-300 torrents. I am too lazy to sort them out now. Sorry.
+
+Frankly, I can't wait to see what will people do with this stuff. And I like graphs, so I made some :)
+
+## Uploaded torrents
+
+First, let's look at the most basic thing - how many torrents people upload a day? Is it growing or staying about the same? Let's put the days on X axis and number of torrents on Y axis.
+
+=> number.png number of torrents uploaded
+
+Well, as we can see, the number is growing, even when it's not as smooth as it could be. We can see some drops to zero, I guess it's the days when Pirate Bay was off.
+
+Let's look at the cumulative functions - how much is the number of torrents growing over time?
+
+=> number_cumul.png number of torrents cummulative
+
+It's growing nicely. But despite what Pirate Bay says in its footer, I found only about 2 millions of torrents.
+
+## Number of seeders
+
+Now, let's look at something else - is it true, that the newest torrents are seeded the most, or not? Let's put all the torrents on X axis, sort them by time, and put the number of seeders on Y axis. Once R finally crunches the numbers, we get this graph.
+
+=> seeders.png number of seeders per time
+
+We can see that except for some insanely popular torrents in the past, the more recent torrents are indeed the more seeded ones. However, when I tried to look at the seeder numbers closely, I realized one thing.
+
+Slightly more than one third of the torrents have *no seeders at all*. Nothing. Actually, more than 3/4 of the torrents have 4 seeders or less.
+
+On the other hand, a small number of torrents is insanely popular.
+
+Of course, we can try to visualize this. If you try to graph the popularity on a linear scale and without cutting the very few outliers on the right, you get crazy graph like this. (On X is number of seeders, on Y number of torrents with that number of seeders.)
+
+=> distribution_outliers.png distribution of seeders
+
+Yeah, this is not going to work. Let's cut the outliers on the right (say, torrents with >2000 seeders) and let's put the y axis on logarithmic scale.
+
+=> seeders_log.png distribution of seeders log
+
+Keep in mind that Y axis is on logarithmical scale. This is pretty crazy.
+
+What's to take from this? Torrents on TPB are really, really unevenly seeded. Unfortunately, with no seeders, magnet links are useless. So, for about 1/3 of this archive, the magnet links are not really useful, and for 3/4, they are useful only if you are very lucky. OTOH, the actual torrents files would make this archive much bigger (and it's not really that small to begin with)
+
+## Words
+
+Last but not the least, you can do fun stuff with the descriptions and comments themselves. Unluckily, I currently have no time to play with it, so I just looked at the names of the torrents, did some primitive tokenization and looked at the most favourite words in the torrent names. Well, the results speak for themselves :)
+
+```table
+
++-------+-------------+--------+
+| Order | Appearances |  Word  |
++-------+-------------+--------+
+|     1 |      184015 | XviD   |
+|     2 |      177920 | The    |
+|     3 |      137824 | HDTV   |
+|     4 |       86804 | x264   |
+|     5 |       74855 | DVDRip |
+|     6 |       65450 | 720p   |
+|     7 |       48845 | XXX    |
+|     8 |       39148 | 2011   |
+|     9 |       34117 | 2012   |
+|    10 |       32547 | 2010   |
+|    11 |       31453 | avi    |
+|    12 |       28516 | PDTV   |
+|    13 |       27057 | VA     |
+|    14 |       24888 | 2009   |
+|    15 |       24527 | com    |
+|    16 |       22558 | AC3    |
+|    17 |       22072 | A      |
+|    18 |       21019 | 2      |
+|    19 |       19167 | WS     |
+|    20 |       18563 | 2008   |
+|    21 |       18065 | 1      |
+|    22 |       17836 | 480p   |
+|    23 |       16610 | SWESUB |
+|    24 |       16140 | 12     |
+|    25 |       16123 | of     |
+|    26 |       14861 | the    |
+|    27 |       14300 | Of     |
+|    28 |       13706 | Big    |
+|    29 |       12662 | and    |
+|    30 |       12592 | BluRay |
+|    31 |       12563 | DVDRiP |
+|    32 |       12421 | mSD    |
+|    33 |       12233 | 3      |
+|    34 |       12019 | s      |
+|    35 |       11701 | XViD   |
+|    36 |       11532 | 2007   |
+|    37 |       10978 | I      |
+|    38 |       10898 | 2HD    |
+|    39 |       10556 | LOL    |
+|    40 |       10504 | 10     |
++-------+-------------+--------+
+```
+
+Well there you have it. All I have been able to squeeze from the archive for now, but I think more people will have more ideas. The links are on the top.
+
+## Update - XML
+---
+OK, I have messed the XML because of not escaping ampersand. Damn you, XML.
+
+I made quick and *really really hacky* perl scripts that will make them both valid and well formed
+
+=> https://github.com/karelbilek/pb-archive-make-valid
+
+The script needs perl, bash and sed, so you will need Linux (OS X will *maybe* be sufficient but I have nowhere to try).

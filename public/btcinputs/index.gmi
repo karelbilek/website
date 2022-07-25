@@ -1,0 +1,125 @@
+# Statistics of bitcoin input (script) lengths from august 2015 to august 2017-ish
+
+2017-08-17
+
+Note: this is here just for historical reason. It was written some time in august 2017, in the height of dumb Segwit debates. In 2021, these stats are very much out of date. The script could still work, but segwit added more complexity to already needlessly complex protocol.
+
+I wanted to know, how long inputs are in bitcoin transactions.
+
+=> experiment.gmi The script is here.
+
+It is in node, and it is using bitcoinjs-lib libraries.
+
+=> lengths.gmi Complete results are here (just the final ones), sorted by counts.
+
+tl;dr:
+
+* 84% of inputs are from "normal" 1-addresses
+* 16% is from P2SH
+* from all the P2SH, almost 100% is multisig
+* most popular multisigs are 2-of-3 (67%), followed by 2-of-2 (32%)
+
+Now for some graphs and tables.
+
+All the lengths are lengths of the *input script*, not the whole input. The input itself is always 41 bytes larger. Also note: I skipped the "coinbase inputs". They make 110.000 inputs; there was 110.000 blocks I looked at.
+
+## pkh vs sh
+
+This is classified by bitcoinjs-lib, see the code
+
+```
++-------------+-------------+
+|    type     |    count    |
++-------------+-------------+
+| pubkeyhash  | 344 968 239 |
+| scripthash  |  63 713 612 |
+| pubkey      |     354 869 |
+| nonstandard |     110 409 |
+| multisig    |      11 284 |
++-------------+-------------+
+```
+
+Multisig is not very popular.
+
+edit: as was noted to me on IRC, this is actually native multisig, not the normally used, p2sh multisig. Native multisig is not used for actual multisig, only for adding more data to transactions. That explains the small numbers.
+
+=> types.png Graph, made in google charts
+
+## Pkh input script lengths
+
+Most lengths in PKH are either 106/107 (with scraps around the edges), and a bit 138/139 (again with scraps around edges)
+
+=> pkh_time.png
+=> pkh_pie.png
+
+=> pkh.gmi See this file for just PKH counts.
+
+### Looking deeper into PKH lengths
+
+Most often, the script consists of (1) signature, which is ~70-72 bytes long, encoded using BIP66, and (2) public key
+
+=> https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki BIP66
+
+The public key can be either compressed or uncompressed, both cases are valid; compressed is 33 bytes long, uncompressed is 65 long.
+
+With the length encoduing (1 byte for sig length, 1 byte for pubkey length), this adds up to the numbers above
+
+* 1 + 72 + 1 + 65 = 139
+* 1 + 72 + 1 + 33 = 107
+
+So, 91% of inputs are using compressed private keys, 8% are using uncompressed ones, the rest is doing something strange.
+
+# Sh input script lengths
+
+Scripthash input script lengths can be more varied by definition, but surprisingly less than I thought.
+
+Most are in the area around 253 and around 218, +- 2 bytes
+
+However, there is also a very very long tail. Cutting the tail decreases average length around 1 byte. Not much, but not zero.
+
+=> sh_time.png
+=> sh_pie.png
+
+=> sh.gmi See SH counts in CSV.
+
+### Looking deeper into SH types
+
+I have looked deeper into P2SH statistics.
+
+=> experiment2.gmi The script is here.
+
+=> sh_with_types.gmi Results here.
+
+Basically all P2SH inputs are multisig. Those are the most popular types with > 0.01% (note: it's percentage of p2sh inputs, not all inputs.)
+
+```
++-------------+------------+
+|    type     | percentage |
++-------------+------------+
+| 2-of-3      | 66.84%     |
+| 2-of-2      | 31.36%     |
+| 2-of-6      | 0.73%      |
+| 3-of-4      | 0.22%      |
+| 2-of-4      | 0.21%      |
+| 1-of-1      | 0.20%      |
+| 3-of-5      | 0.16%      |
+| nonstandard | 0.13%      |
+| 1-of-2      | 0.06%      |
+| 1-of-3      | 0.02%      |
+| 4-of-5      | 0.01%      |
+| 3-of-3      | 0.01%      |
+| 3-of-6      | 0.01%      |
+| 1-of-6      | 0.01%      |
+| pubkey      | 0.01%      |
+| 2-of-5      | 0.01%      |
++-------------+------------+
+```
+
+
+"nonstandard" are all the weird p2shs that bitcoinjs-lib cannot categorize - like the one below - lumped together.
+
+=> https://www.blockchain.com/btc/tx/2d2772e197571aefa2209f6240840e2ea44bffa19c1b8995cb00bbe260fc6b1f nonstandard tx
+
+The data check out with the lengths before - the inputs with script lengths "around" 218 are 2-of-2 multisigs, the inputs with script lengths "around" 253 are 2-of-3 multisigs.
+
+=> msig.png

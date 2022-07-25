@@ -1,0 +1,229 @@
+# Things I hate in go
+
+2020-03-17
+
+I like go. As a code soldier, I want to write in Go. I like the direction Go is going and evolving.
+
+That being said, personally, there are things I absolutely hate in go. I will write them down, cause why not.
+
+I have worked with go for some 3 years now, in companies of different codebase sizes and qualities. It does not make me an expert, but allows me to have an opinion already.
+
+## Enums/Iota
+
+One of the reasons I like go is its obviousness. Code written in Go is clear, and you can usually tell what it’s doing by just looking at it.
+
+=> https://dave.cheney.net/2019/07/09/clear-is-better-than-clever Clear is better than clever!
+
+Go creators clearly hold simplicity as a core value, and it shows throughout the language.
+
+What doesn’t fit at all, then, is the Iota syntax for pseudo-enums.
+
+```
+type DayOfWeek int
+const (
+    Monday DayOfWeek = iota
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+    Sunday
+)
+```
+
+This syntax is clever, sure! But it’s not at all clear. What is exactly going on? How are the values increased? What is this?
+
+What’s not helping is that these “enums” are not really enums anyway
+
+```
+package main
+
+import (
+    "fmt"
+)
+
+type DayOfWeek int
+
+const (
+    Monday DayOfWeek = iota
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+    Sunday
+)
+
+func main() {
+    var i DayOfWeek = Tuesday
+    i = 10 // lol type safety
+    fmt.Println(i)
+    var q int = -1
+    i = DayOfWeek(q) // lol type safety
+    fmt.Println(i)
+}
+```
+
+The whole iota syntax has too much “cleverness” going on, even in non-enum cases. From documentation:
+
+```
+const (
+    _	= iota // ignore first value by assigning to blank identifier
+    KB ByteSize = 1 << (10 * iota)
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+)
+```
+
+what
+
+Yes of course, it is not that complex, if you pause for a while and try to parse it in your head. It’s clever, sure. Nice syntax sugar! But not at all clear. It gets me flashbacks to the time I used to write Perl for university NLP courses. I used to write a lot of Perl. It was not a good experience.
+
+And it’s obvious that people do need enums! It’s normal to want to want to have a type, representing a finite number of cases. All languages either have this, or try to fake it (like go or C).
+
+Speaking of C. Go’s enums are closer to C-style enums than any other language. I don’t consider that a good thing.
+
+Consider following code, in C vs C++
+
+```
+enum week{Mon, Tue, Wed, Thur, Fri, Sat, Sun};
+
+int main(){
+    enum week day;
+    day = 10; // works in C, does not work in C++
+    return 0;
+}
+```
+
+day = 10 happily works in pure C, but fails in C++ with invalid conversion from 'int' to 'week' , as it should.
+
+## Templating
+
+Oh boy.
+
+Go templating is cute at first. “Hey, what if we have built-in, standard way of generating text from objects.”
+
+Yeah nice. But. For unknown reason, text/template and html/template authors decided to use a horrible syntax.
+
+This is a part of a popular template for Hugo system, that uses go templating. It illustrates what I have in mind.
+
+```
+{{ define "book-section" }}
+{{ with .Section }}
+ <li {{- if .Params.BookFlatSection }} class="book-section-flat" {{ end }}>
+ {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+ {{ template "book-section-children" (dict "Section" . "CurrentPage" $.CurrentPage) }}
+ </li>
+{{ end }}
+{{ end }}
+
+{{ define "book-section-children" }}
+{{ $ancestor := .Section.IsAncestor .CurrentPage }}
+{{ $collapsed := .Section.Params.bookCollapseSection }}
+
+{{ if or $ancestor (not $collapsed) }}
+ {{ with .Section }}
+ <ul>
+ {{ range where .Pages "Params.bookhidden" "!=" "true" }}
+ {{ if eq .Kind "section" }}
+ {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage) }}
+ {{ else if and (eq .Kind "page") .Content }}
+ <li>
+ {{- template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) -}}
+ </li>
+ {{ end }}
+ {{ end }}
+ </ul>
+ {{ end }}
+{{ end }}
+```
+
+=> https://github.com/alex-shpak/hugo-book/blob/0d1ba29999a500166fa77187cf5c664942d09e57/layouts/partials/docs/menu-filetree.html source
+
+
+What even is this
+
+```
+{{ range where .Pages "Params.bookhidden" "!=" "true" }}
+```
+
+uh
+
+```
+{{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage) }}
+```
+
+why
+
+```
+{{ else if and (eq .Kind "page") .Content }}
+```
+
+ugh
+
+For some reason, go templates use language that is almost as powerful as go and has many features of go, but it is just straight up weird. And unlike go, the templating has no static checks (since it is dynamically loaded usually), so it’s a real pain to write and refactor.
+
+Why this specially hurt is that so much of go tooling is based on code generation (since lol no generics), and the code generation often uses text/template.
+
+## Go modules documentation
+
+(Note: this is not valid in 2021 anymore. The documentation improved significantly.)
+
+Don’t get me wrong. I love go modules. Go modules are a godsend, compared to stuffing everything into vendor, or using dep.
+
+However, what is missing is some good documentation.
+
+Even in other fields of Go, the documentation is a mix of blogposts and no longer relevant historical baggage. However, go modules documentation is abysmal.
+
+Googling “go modules” will get you this 4 part blogpost, which is absolutely useless for beginners, or even for me.
+
+=> ?https://blog.golang.org/using-go-modules Using Go Modules
+
+I want a clear and simple instructions with how to use go modules, for the most usual tasks (like the awesome replace directive). Not 4 part blogpost!
+
+The following wiki is slightly better in that it’s at least better structured, but also incredibly confusing!
+
+=> https://github.com/golang/go/wiki/Modules
+
+What’s sad that using go modules is actually very simple! Sure, there are hidden complexities, but you don’t need to worry about them that much in daily work. The replace directive is especially useful for local testing.
+
+## State in modules
+
+Now this is more about “bad coding practices” than anything — that’s why it’s last — but it can still get frustrating.
+
+Importing modules can have side effects. Once you import module, the function init is called; also, top-level variables are accessible.
+
+This can be sometimes infuriating. Especially when module A changes, in its init function, some global state of another module B.
+
+You can call this “bad engineering practice”, but it’s actually idiomatic way to initialize sql drivers for database/sql!!
+
+=> https://github.com/lib/pq/blob/9eb3fc897d6fd97dd4aad3d0404b54e2f7cc56be/conn.go#L51 lib/pq source
+
+```
+github.com
+
+func init() {
+    sql.Register("postgres", &Driver{})
+}
+```
+
+I really hate this.
+
+Similar thing is done with generated code from protoc-gen-go , and I also hate it.
+
+=> https://github.com/golang/protobuf/blob/84668698ea25b64748563aa20726db66a6b8d299/ptypes/any/any.pb.go#L186 golang/protobuf source
+
+```
+github.com
+
+func init() {
+    proto.RegisterFile("google/protobuf/any.proto", fileDescriptor_b53526c13ae22eb4)
+}
+```
+
+Ugh. Although protobuf tooling would be another whole article... which is especially sad, as protobuf itself is very nice and elegant.

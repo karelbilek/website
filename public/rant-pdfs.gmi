@@ -1,0 +1,233 @@
+# A rant on PDF filling
+
+2022-04-18
+
+In my job, I needed to programatically fill PDFs forms in go. What's hard about that, right!
+
+=> https://github.com/karelbilek/fillpdf (In the end, the result is here, but it is just a go wrapper around java wrapper, that pretends it's a C++ wrapper around a java library...)
+
+Filling PDF forms is actually a nightmare. PDF is a horrible standard. There is no actually good software that can reliably fill PDF forms! The only one that *actually works* is Adobe Acrobat, and that only works on Windows and Linux and require subscription!
+
+First, a little info about PDF forms.
+
+PDF forms are not like HTML forms, that they have form field and some values. Instead, each form form field has 2 different things:
+
+1. there is "value", which is the textual value,
+
+2. and there is "appearance", which is the rendering of that value, with a particular font.
+
+They are *a different thing*; they can differ, they can show up something else from each other; one can have broken unicode when other works.
+
+(There is also "default appearance" and "default value", which are for when the field is "empty".)
+
+Broken PDF fillers (basically everything except for Acrobat/Acrobat Reader) fill the appearance wrong, on a wrong place, or change the font.
+
+The appearance is sometimes call "AP stream", you can find it online with that name.
+
+Basically only Acrobat fills the forms correctly, with unicode, and does create the appearance properly.
+
+In theory, you can fill just the value (as that's much easier) and set a flag to regenerate appearences (NeedAppearances); what happens is that, in theory, when opening PDF, software opening the PDF will regenerate the appearances, which will *change the PDF*. However, that does not work in reality all that well, and randomly some fields are not regenerated. That will cause form fields to "look" empty.
+
+There are those softwares for filling PDF, stressing the go options a bit:
+
+## itextpdf
+
+First is itextpdf.
+
+Itextpdf is the one you will hit the most. Most of the open source tools just wrap itextpdf. itextpdf is itself in java.
+
+It has an old, unmaintained version, that is GPLv3, and a new version, that is AfferoGPL.
+
+=> https://github.com/itext/itextpdf
+
+=> https://github.com/itext/itext7
+
+The old one fails with unicode with my testing. Both the values and the appearances can randomly have broken unicode. Also, filling the PDF is not very friendly, as it requires calling the Java functions.
+
+It might be actually already fixed in the new, itextpdf version; see below with pdftk
+
+## pdftk
+
+There is pdftk. But, if you dig deeper, pdftk just wraps old version of itextpdf. PDFTk itself is in a mixture of C++ and Java.
+
+=> https://github.com/fwenzel/pdftk
+
+As it just wraps old version of itextpdf (not the affero one), it fails with unicode.
+
+Lot of go "pdf fillers" that you find online just use PDFTk, as it is much friendlier API-wise than itextpdf.
+
+## mcpdf
+
+Some random guy made a tiny package, that wraps over *new* itextpdf, while trying to mimic pdftk API (just filling the forms).
+
+=> https://github.com/m-click/mcpdf
+
+It works OK. With my experience, the values are filled correctly with unicode, while the appearances are 50:50. Sometimes, they are filled correctly, but sometimes not.
+
+It was overall most reliable. But not all that much.
+
+I have used this one in my PDF filling library.
+
+=> https://github.com/karelbilek/fillpdf
+
+## pdf.js
+
+pdf.js is firefox's PDF viewer. It is in Javascript. It's quite good! When you consider, that all PDF parsers are old (itextpdf is old, as is foxit), while pdfjs was written from scratch!
+
+=> https://github.com/mozilla/pdf.js/
+
+But it's hard to use programatically for filling PDFs. At least I did not figure out how to do it.
+
+Also, the appearances are often displayed in a wrong place on some PDFs.
+
+## Foxit
+
+Foxit is a freemium software for opening and editing PDFs.
+
+It seems like it's the better of all the options; it can save unicode well, and the appearances are on correct places.
+
+However, the unicode appearances are in a wrong font.
+
+## PDFium
+
+PDFium is Chrome's PDF engine. It's actually a code that they bought from FoxIt and renamed PDFium.
+
+=> https://pdfium.googlesource.com/pdfium/
+
+As it's just rebranded FoxIt, it has the same issues/positives and behaves exactly the same; but it is actually open source. You can see FPDF all around the source code, which is for Foxit PDF.
+
+I have not tried it for filling forms, but it seems there is a possibility.
+
+While writing this article, I have noticed, that there is a Go wrapper, that supports PDF filling!
+
+=> https://github.com/klippa-app/go-pdfium
+
+However, it is not directly including PDFium through CGo, but you need to download and setup the library through pkgconfig. And there is some gymnastics for multiple threads (and single-threaded can randomly segfault, amazing). So, eh.
+
+I think if I tried this now, I would not try the Java mcpdf and I would go directly to Go PDFium. As the unicode situation seems to be better; and mcpdf is just some one guy weekend project, while go-pdfium seems to be more maintained. However, you exchange Java gymnastics for C++ and pkgconfig gymnastics.
+
+## macOS Preview
+
+macOS built-in preview handles unicode relatively well, however, it generates the appearances at wrong places.
+
+## rsc pdf library
+
+Russ Cox of go team has made a go PDF library, that is just for reading and parsing.
+
+It is no longer maintained, but I add it here for completeness, because it works for what it's worth. See also the next few entries here.
+
+=> https://github.com/rsc/pdf
+
+## ledongthuc fork
+
+There is a maintained fork of rsc library here.
+
+This library is great for parsing PDFs; it fixes some issues and adds some helper functions to RSC PDF library; it uses the same API.
+
+=> https://github.com/ledongthuc/pdf
+
+It is, however, not for filling forms and changing the texts; the library only reads the PDF, cannot save it.
+
+## pdfcpu
+
+pdfcpu is the most promising thing here.
+
+pdfcpu is a go library, that has PDF parsing and PDF editing, with pure go. Written from scratch!
+
+=> https://github.com/pdfcpu/pdfcpu
+
+The API seemed to me a bit confusing and over the place (although I cannot cite a specific example now); I prefer RSC library API; however, it is great for parsing and trying to understand PDFs, and for editing the PDF itself. It seems to be far more complete than RSC's library, and it seems to have goal for more things over the time.
+
+With some work and low-level hackery, you can fill the PDF form with pdfcpu yourself, with directly changing the values of the forms. This works with unicode. However, there is no simple way to generate the AP appearance streams.
+
+pdfcpu can, however, generate the AP streams in a different place for something else; so, I think, that when hhrutter, main maintainer, will want to add it, it will be easy. I have not been able to do so.
+
+There is a message 30 days ago (when I write this), saying:
+
+"This feature will be part of the next release. Stay tuned 👍"
+
+=> https://github.com/pdfcpu/pdfcpu/issues/42#issuecomment-1075170822
+
+Well, I am staying tuned! 
+
+## origami
+
+Origami is a ruby library for PDF. It does support PDF forms, according to the readme
+
+=> https://github.com/gdelugre/origami
+
+I have no idea how well it works, and what is the unicode situation, as it's in Ruby and I don't really understand that ecosystem.
+
+Seeing this discussion...
+
+=> https://github.com/gdelugre/origami/issues/44
+
+... it seems that it does *not* actually support filling the forms. (The code is just changing V value; that means changing the value, but not the appearances.)
+
+## pdfwalker
+
+=> https://github.com/gdelugre/pdfwalker
+
+pdfwalker is a tool, that can show you what is inside a PDF. It is based on origami above.
+
+I am adding it here just for completeness.
+
+It took me a while to install this on MacOS with M1. I *think* what worked for me (you need to install XQuartz before):
+
+```
+brew install libtiff gtk+
+gem install origami gtk2
+gem install gtk2 -v '3.4.3' --source 'https://rubygems.org/' -- --with-cflags="-Wno-er
+ror=implicit-function-declaration"
+gem install pdfwalker
+```
+
+## Acrobat through API
+
+Well, that's the elephant in the room.
+
+Acrobat Reader is the only software that can really fill the PDF properly, with unicode, with proper fonts, and put the appearances in the correct places.
+
+(For some reason it does not always re-generate the appearances on opening the file with NeedAppearances, though.)
+
+Acrobat also has an API SDK, including form filling. However, that needs Acrobat Pro, which is a paid subscription software. You need to pay per "seat", per month, and I cannot figure out if they even sell server license. 
+
+From what I understand, Acrobat is available only on Windows and Mac. Which makes this very inconvenient on server side.
+
+## Acrobat Reader through XVFB
+
+Acrobat is a paid service, and is not available for Linux.
+
+However. There is an ancient version of Acrobat Reader, that *is* available on Linux. I have not tried this recently; when I tried it in 2020, it was still possible to install it, but I don't remember the procedure.
+
+What I did was a script, that started acroread and filled the fields by making "tab" pushes on virtual keyboard.
+
+That actually worked better than anything else. It filled the PDF with pushing a lot of "tab", and it returned working unicode, everything as should be.
+
+However, this was also hard to debug long term; the xdotool script was terrifying, and I worried it will all explode in some way.
+
+I do not have the script on hand, as it was very ad-hoc and for the one specific PDF.
+
+## Sum up: what to use?
+
+I don't know. Sorry.
+
+If you want the form to work with unicode, and you want the appearences to be generated properly, there is no good option.
+
+A bummer!
+
+Maybe the XVFB + a lot of pressing "tap" on virtual keyboard works for you. But it seems pretty horrible to me, if you ask me.
+
+If you don't care about unicode, go with some of the pdftk or itextpdf wrappers; there is tons of them, they are all pretty much the same.
+
+mcpdf worked the best for me; so much that I have written my own wrapper.
+
+## Note: AcroForms vs XFA forms
+
+Now I have not touched this.
+
+There are *two separate* and *very different* standards for filling PDF forms. Oops!
+
+What I wrote above is all for AcroForms. I have *no idea* what works for XFA forms.
+
+If I can imagine, Acrobat Reader will be, again, the only one doing them properly. But I don't know.

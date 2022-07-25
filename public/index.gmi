@@ -1,0 +1,33 @@
+Hello.
+
+My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic, but currently live in Ho Chi Minh City, Vietnam, with happy family and a great job.
+
+This is my gemini capsule; if you are visiting from the web, the gemini capsule is proxied.
+
+## Longer things
+
+My longer-ish things.
+
+=> things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
+=> rant-pdfs.gmi 2022-04-18 Rant about PDFs
+
+## Thoughts
+Uh some short thoughts
+
+=> hate-imessage.gmi 2021-11-16 iMessage is horrible
+=> go-labels.gmi 2021-11-16 I proudly use labels with go loops
+
+## Contact
+
+=> mailto:kb@karelbilek.com e-mail
+
+I am also on Facebook, not very hard to find, and on LinkedIn (but just for work stuff). Currently I am on Twitter, but considering deleting it, I guess after I get more comfortable here.
+
+## Past
+
+In the past, I was more "cypherpunk" than now. I got involved in scraping/archiving Pirate Bay, I got involved in bitcoin development and tooling around that (at one point in 2012, I owned about 30000 BTC, lol).
+
+I guess what kind of stopped me was seeing what happened to bitcoin and cryptocurrencies in general; and that made me reconsider if the starting point made any sense. I kind of changed my life views and priorities since then, basically after reading Catechism of Catholic Church and writings of St. Augustine. I might share more here when I have time/mood.
+
+=> piratebay/ 2013-02-01 Pirate Bay
+=> btcinputs/ 2017-08-17 Statistics of bitcoin input script lengths
