@@ -17,6 +17,12 @@ processes = []
   auto_rollback = true
 
 [[services]]
+  internal_port = 1965
+  protocol = "tcp"
+  [[services.ports]]
+    port = 1965
+
+[[services]]
   http_checks = []
   internal_port = 8080
   processes = ["app"]

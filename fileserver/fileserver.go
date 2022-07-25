@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"mime"
 	"path"
 	"strings"
@@ -23,6 +24,7 @@ func Serve(root fs.FS) func(w gemini.ResponseWriter, r *gemini.Request) {
 	return func(w gemini.ResponseWriter, r *gemini.Request) {
 		fl, fullpath, redirTo, err := fullPath(root, r.URL.Path)
 		if err != nil {
+			log.Println("error 1 - ", r.URL.Path, err)
 			w.WriteHeader(gemini.StatusNotFound, "oopsie woopsie!! UwU")
 			return
 		}
@@ -34,6 +36,8 @@ func Serve(root fs.FS) func(w gemini.ResponseWriter, r *gemini.Request) {
 
 		body, mimeType, err := readFile(fullpath, fl)
 		if err != nil {
+			log.Println("error 2 -  ", r.URL.Path, fullpath, err)
+
 			w.WriteHeader(gemini.StatusNotFound, "oopsie woopsie!! UwU")
 			return
 		}
@@ -44,7 +48,12 @@ func Serve(root fs.FS) func(w gemini.ResponseWriter, r *gemini.Request) {
 }
 
 func fullPath(root fs.FS, requestPath string) (fs.File, string, string, error) {
-	pathInfo, err := root.Open(requestPath)
+	fPath := strings.TrimPrefix(requestPath, "/")
+	fPath = strings.TrimSuffix(fPath, "/")
+	if fPath == "" {
+		fPath = gemini.IndexFile
+	}
+	pathInfo, err := root.Open(fPath)
 	if err != nil {
 		return nil, "", "", fmt.Errorf("path: %w", err)
 	}
@@ -58,17 +67,24 @@ func fullPath(root fs.FS, requestPath string) (fs.File, string, string, error) {
 		if !strings.HasSuffix(requestPath, "/") {
 			return nil, "", requestPath + "/", nil
 		}
-		fmt.Println(requestPath)
-		subDirIndex := path.Join(requestPath, gemini.IndexFile)
-		subPathInfo, err := root.Open(subDirIndex)
-		if err != nil {
-			return nil, subDirIndex, "", ErrDirWithoutIndexFile
-		}
 
-		return subPathInfo, "", "", nil
+		log.Println("it is dir")
+		//fmt.Println(requestPath)
+		subDirIndex := path.Join(fPath, gemini.IndexFile)
+		subPathInfo, err := root.Open(subDirIndex)
+		log.Println("spi", subDirIndex)
+
+		if err != nil {
+			log.Println("error getting")
+
+			return nil, "", "", ErrDirWithoutIndexFile
+		}
+		log.Println("got index")
+
+		return subPathInfo, subDirIndex, "", nil
 	}
 
-	return pathInfo, requestPath, "", nil
+	return pathInfo, fPath, "", nil
 }
 
 func readFile(fpath string, file fs.File) ([]byte, string, error) {

@@ -522,7 +522,7 @@ func mainProxy() {
 	}))
 
 	//if _, err := os.Stat("/etc/letsencrypt/live/karelbilek.com/fullchain.pem"); errors.Is(err, os.ErrNotExist) {
-	var bind string = ":80"
+	var bind string = ":8080"
 	log.Printf("HTTP server listening on %s", bind)
 	log.Fatal(http.ListenAndServe(bind, nil))
 	// } else {

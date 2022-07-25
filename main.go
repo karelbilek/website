@@ -17,6 +17,8 @@ import (
 	"github.com/karelbilek/website/middleware"
 )
 
+const purl = "karelbilek.com"
+
 //go:embed public
 var staticfs embed.FS
 
@@ -53,7 +55,7 @@ func main() {
 
 	server := &gemini.Server{
 		Addr:            "0.0.0.0:1965",
-		Hostname:        "karelbilek.com",
+		Hostname:        purl,
 		TLSConfigLoader: setupCertificate(),
 		Handler:         mux,
 		MaxOpenConns:    defaultMaxConns,
@@ -97,7 +99,7 @@ func setupCertificate() func() (*tls.Config, error) {
 		if err != nil {
 			return nil, fmt.Errorf("load x509 keypair: %w", err)
 		}
-		return gemini.TLSConfig("karelbilek.com", cert), nil
+		return gemini.TLSConfig(purl, cert), nil
 	}
 }
 
