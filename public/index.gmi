@@ -1,8 +1,6 @@
 Hello.
 
-My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic, but currently live in Ho Chi Minh City, Vietnam, with happy family and a great job.
-
-This is my gemini capsule; if you are visiting from the web, the gemini capsule is proxied.
+My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic.
 
 ## Longer things
 

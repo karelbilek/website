@@ -13,6 +13,8 @@ import (
 	"time"
 	"unicode"
 
+	_ "embed"
+
 	"git.sr.ht/~adnano/go-gemini"
 )
 
@@ -125,19 +127,23 @@ var gemtextPage = template.Must(template.
 		},
 	}).
 	Parse(`<!doctype html>
-<html>
+<html amp lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-{{- if .CSS }}
-{{- if .ExternalCSS }}
-<link rel="stylesheet" type="text/css" href="{{.CSS | safeCSS}}">
-{{- else }}
-<style>
-{{.CSS | safeCSS}}
-</style>
-{{- end }}
-{{- end }}
 <title>{{.Title}}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+body {
+	max-width: 920px;
+	margin: 0 auto !important;
+	padding: 1rem 2rem;
+	font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+</style>
+</head>
+<body>
 <article{{if .Lang}} lang="{{.Lang}}"{{end}}>
 	{{ $ctx := . -}}
 	{{- $isList := false -}}
@@ -202,41 +208,12 @@ var gemtextPage = template.Must(template.
 	{{- end }}
 </article>
 	<hr>
-		Proxied from <a href="{{.URL.String | safeURL}}">{{.URL.String | safeURL}}</a>
-		by modified <a href="https://sr.ht/~sircmpwn/kineto">kineto</a>.
-
+		<a href="https://github.com/karelbilek/website">github</a> | <a href="gemini://karelbilek.com">gemini</a>
+</body>
+</html>
 `))
 
-var inputPage = template.Must(template.
-	New("input").
-	Funcs(template.FuncMap{
-		"safeCSS": func(s string) template.CSS {
-			return template.CSS(s)
-		},
-	}).
-	Parse(`<!doctype html>
-<html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-{{- if .CSS }}
-{{- if .ExternalCSS }}
-<link rel="stylesheet" type="text/css" href="{{.CSS | safeCSS}}">
-{{- else }}
-<style>
-{{.CSS | safeCSS}}
-</style>
-{{- end }}
-{{- end }}
-<title>{{.Prompt}}</title>
-<form method="POST">
-	<label for="input">{{.Prompt}}</label>
-	{{ if .Secret }}
-	<input type="password" id="input" name="q" />
-	{{ else }}
-	<input type="text" id="input" name="q" />
-	{{ end }}
-</form>
-`))
+//
 
 const defaultCSS = ``
 
@@ -312,18 +289,9 @@ func proxyGemini(req gemini.Request, external bool, root *url.URL,
 
 	switch resp.Status {
 	case 10, 11:
-		w.Header().Add("Content-Type", "text/html")
-		err = inputPage.Execute(w, &InputContext{
-			CSS:         css,
-			ExternalCSS: externalCSS,
-			Prompt:      resp.Meta,
-			Secret:      resp.Status == 11,
-			URL:         req.URL,
-		})
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("%v", err)))
-		}
+		w.WriteHeader(http.StatusNotFound)
+		// I don't have inputs on my site so who cares
+		fmt.Fprintf(w, "Strange times,")
 		return
 	case 20:
 		break // OK
@@ -397,7 +365,7 @@ func proxyGemini(req gemini.Request, external bool, root *url.URL,
 		ExternalCSS: externalCSS,
 		External:    external,
 		Resp:        resp,
-		Title:       req.URL.Host + " " + req.URL.Path,
+		Title:       "Karel Bilek",
 		Lang:        lang,
 		URL:         req.URL,
 		Root:        root,
@@ -434,6 +402,14 @@ func (h HandleFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h(w, r)
 }
 
+// hack for legacy comics page, TODO fix later
+//go:embed chronocomics/dist/bundle.js
+var comicsBundlejs []byte
+
+// hack for legacy comics page, TODO fix later
+//go:embed chronocomics/dist/index.html
+var comicsIndex []byte
+
 func mainProxy() {
 	var (
 		css      string = defaultCSS
@@ -446,18 +422,6 @@ func mainProxy() {
 	}
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//if r.Method == "POST" {
-		//	r.ParseForm()
-		//	if q, ok := r.Form["q"]; !ok {
-		//		w.WriteHeader(http.StatusBadRequest)
-		//		w.Write([]byte("Bad request"))
-		//	} else {
-		//		w.Header().Add("Location", "?"+q[0])
-		//		w.WriteHeader(http.StatusFound)
-		//		w.Write([]byte("Redirecting"))
-		//	}
-		//	return
-		//}
 
 		log.Printf("%s %s", r.Method, r.URL.Path)
 		if r.Method != "GET" {
@@ -466,17 +430,21 @@ func mainProxy() {
 			return
 		}
 
+		// hack for old comics site
+		if strings.Contains(r.URL.Path, "chronocomics") {
+			if strings.Contains(r.URL.Path, "bundle.js") {
+				w.Write(comicsBundlejs)
+			} else {
+				w.Write(comicsIndex)
+			}
+			return
+		}
+
 		if r.URL.Path == "/favicon.ico" {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("404 Not found"))
 			return
 		}
-		//
-		//if r.URL.Path == "/robots.txt" {
-		//	w.WriteHeader(http.StatusOK)
-		//	w.Write([]byte("User-agent: *\nDisallow: /\n"))
-		//	return
-		//}
 
 		req := gemini.Request{}
 		req.URL = &url.URL{}
@@ -487,56 +455,8 @@ func mainProxy() {
 		proxyGemini(req, false, root, w, r, css, external)
 	}))
 
-	http.Handle("/x/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-			r.ParseForm()
-			if q, ok := r.Form["q"]; !ok {
-				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte("Bad request"))
-			} else {
-				w.Header().Add("Location", "?"+q[0])
-				w.WriteHeader(http.StatusFound)
-				w.Write([]byte("Redirecting"))
-			}
-			return
-		}
-
-		if r.Method != "GET" {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			w.Write([]byte("404 Not found"))
-			return
-		}
-
-		path := strings.SplitN(r.URL.Path, "/", 4)
-		if len(path) != 4 {
-			path = append(path, "")
-		}
-		req := gemini.Request{}
-		req.URL = &url.URL{}
-		req.URL.Scheme = "gemini"
-		req.URL.Host = path[2]
-		req.URL.Path = "/" + path[3]
-		req.URL.RawQuery = r.URL.RawQuery
-		log.Printf("%s (external) %s%s", r.Method, r.URL.Host, r.URL.Path)
-		proxyGeminiExternal(req, w)
-	}))
-
-	//if _, err := os.Stat("/etc/letsencrypt/live/karelbilek.com/fullchain.pem"); errors.Is(err, os.ErrNotExist) {
 	var bind string = ":8080"
 	log.Printf("HTTP server listening on %s", bind)
 	log.Fatal(http.ListenAndServe(bind, nil))
-	// } else {
-	// 	go func() {
-	// 		handler := HandleFunc(func(writer http.ResponseWriter, request *http.Request) {
-	// 			http.Redirect(writer, request, "https://karelbilek.com", 301)
-	// 		})
-	// 		var bind string = ":80"
-	// 		log.Printf("redirect server listening on %s", bind)
-	// 		log.Fatal(http.ListenAndServe(bind, handler))
-	// 	}()
 
-	// 	var bind string = ":443"
-	// 	log.Printf("HTTPS server listening on %s", bind)
-	// 	log.Fatal(http.ListenAndServeTLS(bind, "/etc/letsencrypt/live/karelbilek.com/fullchain.pem", "/etc/letsencrypt/live/karelbilek.com/privkey.pem", nil))
-	// }
 }
