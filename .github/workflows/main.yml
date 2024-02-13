@@ -9,6 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: deploy-group
     steps:
+      - name: set up gemini cert
+        run: |
+          echo $GEMINI_CERT_PEM > gemini-cert.pem
+          echo $GEMINI_KEY_RSA > gemini-key.rsa
+        env:
+          GEMINI_CERT_PEM: ${{ secrets.GEMINI_CERT_PEM }}
+          GEMINI_KEY_RSA: ${{ secrets.GEMINI_KEY_RSA }}
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
