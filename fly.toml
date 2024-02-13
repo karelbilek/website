@@ -6,7 +6,7 @@ kill_timeout = 5
 processes = []
 
 [mounts]
-  source = "data"
+  source = "vol_6r78ggqykmmz7zyv"
   destination = "/app/data"
 
 [build]
