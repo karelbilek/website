@@ -2,6 +2,8 @@ package logs
 
 import (
 	"database/sql"
+	"errors"
+	"os"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -10,7 +12,12 @@ import (
 var globalDB *sql.DB
 
 func init() {
-	db, err := sql.Open("sqlite", "/app/data/data.db")
+	path := "/app/data/data.db"
+	if _, err := os.Stat("/app/data"); errors.Is(err, os.ErrNotExist) {
+		path = "data/data.db"
+	}
+
+	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		panic(err)
 	}
