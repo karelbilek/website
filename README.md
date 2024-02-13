@@ -15,5 +15,7 @@ Functionality of this hacked-together code:
 * it auto-deployes on fly.io using github workflows
 * it saves visit data to SQLite that is also on fly.io and displays them on https://karelbilek.com/visits.txt
 * it works both locally with `go run .` and with deployments to fly.io, including the SQLite
+* choronocomics has index of supermegamonkey comics archive, and some experiments with react/redux
+* the actual content is in public/, in raw gemini format
 
 It is licensed GPLv3, mainly because kineto is

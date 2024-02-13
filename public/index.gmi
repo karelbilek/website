@@ -1,19 +1,6 @@
 Hello.
 
-My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic.
-
-## Longer things
-
-My longer-ish things.
-
-=> things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
-=> rant-pdfs.gmi 2022-04-18 Rant about PDFs
-
-## Thoughts
-Uh some short thoughts
-
-=> hate-imessage.gmi 2021-11-16 iMessage is horrible
-=> go-labels.gmi 2021-11-16 I proudly use labels with go loops
+My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic. I am a Roman Catholic.
 
 ## Contact
 
@@ -21,9 +8,16 @@ Uh some short thoughts
 
 I am also on Facebook and LinkedIn. Finding me there is left as an exercise to the reader.
 
+## Some posts
+
+=> things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
+=> rant-pdfs.gmi 2022-04-18 Rant about PDFs
+=> hate-imessage.gmi 2021-11-16 iMessage is horrible
+=> go-labels.gmi 2021-11-16 I proudly use labels with go loops
+
 ## Past
 
-In the past, I was more "cypherpunk" than now. I got involved in scraping/archiving Pirate Bay, I got involved in bitcoin development and tooling around that (at one point in 2012, I owned about 30000 BTC, lol). I am not involved in that anymore. Some previous articles from that time:
+At some point in my life, I was more into "cypherpunk". I got involved in scraping/archiving Pirate Bay, I got involved in bitcoin development and tooling around that. I am not involved in that stuff anymore. Some previous articles from that time:
 
 => piratebay/ 2013-02-01 Pirate Bay
 => btcinputs/ 2017-08-17 Statistics of bitcoin input script lengths
