@@ -94,6 +94,7 @@ var geminiKeyRsa []byte
 var geminiCertPem []byte
 
 func setupCertificate() func() (*tls.Config, error) {
+	fmt.Println(len(geminiCertPem), len(geminiKeyRsa))
 	return func() (*tls.Config, error) {
 		cert, err := tls.X509KeyPair(geminiCertPem, geminiKeyRsa)
 		if err != nil {
