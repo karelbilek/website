@@ -19,13 +19,11 @@ Uh some short thoughts
 
 => mailto:kb@karelbilek.com e-mail
 
-I am also on Facebook, not very hard to find, and on LinkedIn (but just for work stuff). Currently I am on Twitter, but considering deleting it, I guess after I get more comfortable here.
+I am also on Facebook and LinkedIn. Finding me there is left as an exercise to the reader.
 
 ## Past
 
-In the past, I was more "cypherpunk" than now. I got involved in scraping/archiving Pirate Bay, I got involved in bitcoin development and tooling around that (at one point in 2012, I owned about 30000 BTC, lol).
-
-I guess what kind of stopped me was seeing what happened to bitcoin and cryptocurrencies in general; and that made me reconsider if the starting point made any sense. I kind of changed my life views and priorities since then, basically after reading Catechism of Catholic Church and writings of St. Augustine. I might share more here when I have time/mood.
+In the past, I was more "cypherpunk" than now. I got involved in scraping/archiving Pirate Bay, I got involved in bitcoin development and tooling around that (at one point in 2012, I owned about 30000 BTC, lol). I am not involved in that anymore. Some previous articles from that time:
 
 => piratebay/ 2013-02-01 Pirate Bay
 => btcinputs/ 2017-08-17 Statistics of bitcoin input script lengths
