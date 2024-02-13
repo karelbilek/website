@@ -98,10 +98,11 @@ func setupCertificate() func() (*tls.Config, error) {
 	geminiKeyRsa := bytes.TrimSpace(geminiKeyRsa)
 	geminiCertPem := bytes.TrimSpace(geminiCertPem)
 
+	geminiCertPemS := geminiCertPem[0:50]
 	return func() (*tls.Config, error) {
 		cert, err := tls.X509KeyPair(geminiCertPem, geminiKeyRsa)
 		if err != nil {
-			return nil, fmt.Errorf("load x509 keypair: %w (%d %d)", err, len(geminiCertPem), len(geminiKeyRsa))
+			return nil, fmt.Errorf("load x509 keypair: %w (%d %d %+v)", err, len(geminiCertPem), len(geminiKeyRsa), geminiCertPemS)
 		}
 		return gemini.TLSConfig(purl, cert), nil
 	}
