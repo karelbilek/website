@@ -10,7 +10,7 @@ import (
 var globalDB *sql.DB
 
 func init() {
-	db, err := sql.Open("sqlite", "data/data.db")
+	db, err := sql.Open("sqlite", "/app/data/data.db")
 	if err != nil {
 		panic(err)
 	}
