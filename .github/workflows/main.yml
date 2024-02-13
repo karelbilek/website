@@ -13,8 +13,8 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: set up gemini cert
         run: |
-          echo $GEMINI_CERT_PEM > gemini-cert.pem
-          echo $GEMINI_KEY_RSA > gemini-key.rsa
+          echo "$GEMINI_CERT_PEM" > gemini-cert.pem
+          echo "$GEMINI_KEY_RSA" > gemini-key.rsa
           ls -hl
         env:
           GEMINI_CERT_PEM: ${{ secrets.GEMINI_CERT_PEM }}
