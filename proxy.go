@@ -1,5 +1,6 @@
 package main
 
+// (C) 2022 Drew Devault, see https://git.sr.ht/~sircmpwn/kineto
 import (
 	"context"
 	"fmt"
