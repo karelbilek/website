@@ -16,6 +16,7 @@ import (
 	_ "embed"
 
 	"git.sr.ht/~adnano/go-gemini"
+	"github.com/karelbilek/website/logs"
 )
 
 var gemtextPage = template.Must(template.
@@ -403,10 +404,12 @@ func (h HandleFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // hack for legacy comics page, TODO fix later
+//
 //go:embed chronocomics/dist/bundle.js
 var comicsBundlejs []byte
 
 // hack for legacy comics page, TODO fix later
+//
 //go:embed chronocomics/dist/index.html
 var comicsIndex []byte
 
@@ -446,11 +449,29 @@ func mainProxy() {
 			return
 		}
 
+		if r.URL.Path == "/visits.txt" {
+			visits, err := logs.LatestLogsText()
+			if err != nil {
+				log.Printf("cannot get visits: %+v", err)
+				w.Write([]byte("cannot get visits"))
+				return
+			}
+			w.Write([]byte(visits))
+			return
+		}
+
+		err := logs.Mark(r.URL.Path, false)
+		if err != nil {
+			log.Printf("cannot log to sql: %+v", err)
+		}
+
 		req := gemini.Request{}
 		req.URL = &url.URL{}
 		req.URL.Scheme = root.Scheme
 		req.URL.Host = root.Host
-		req.URL.Path = r.URL.Path
+		// as this is public code, someone can "hack" this, but all that it will do is to not display
+		// in the SQL logs, which is... whatever
+		req.URL.Path = r.URL.Path + "_proxied"
 		req.URL.RawQuery = r.URL.RawQuery
 		proxyGemini(req, false, root, w, r, css, external)
 	}))

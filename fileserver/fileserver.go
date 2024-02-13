@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/karelbilek/website/gemini"
+	"github.com/karelbilek/website/logs"
 )
 
 var (
@@ -22,6 +23,19 @@ var (
 
 func Serve(root fs.FS) func(w gemini.ResponseWriter, r *gemini.Request) {
 	return func(w gemini.ResponseWriter, r *gemini.Request) {
+		isProxy := false
+		if strings.HasSuffix(r.URL.Path, "_proxied") {
+			isProxy = true
+			r.URL.Path = strings.TrimSuffix(r.URL.Path, "_proxied")
+		}
+
+		if !isProxy {
+			err := logs.Mark(r.URL.Path, true)
+			if err != nil {
+				log.Printf("cannot log to sql: %+v", err)
+			}
+		}
+
 		fl, fullpath, redirTo, err := fullPath(root, r.URL.Path)
 		if err != nil {
 			log.Println("error 1 - ", r.URL.Path, err)

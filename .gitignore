@@ -1,3 +1,4 @@
 gemini-cert.pem
 gemini-key.rsa
 megamonkey.tar.gz
+*.db
