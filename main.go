@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"embed"
@@ -94,6 +95,9 @@ var geminiKeyRsa []byte
 var geminiCertPem []byte
 
 func setupCertificate() func() (*tls.Config, error) {
+	geminiKeyRsa := bytes.TrimSpace(geminiKeyRsa)
+	geminiCertPem := bytes.TrimSpace(geminiCertPem)
+
 	return func() (*tls.Config, error) {
 		cert, err := tls.X509KeyPair(geminiCertPem, geminiKeyRsa)
 		if err != nil {
