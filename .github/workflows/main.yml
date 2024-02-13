@@ -13,6 +13,7 @@ jobs:
         run: |
           echo $GEMINI_CERT_PEM > gemini-cert.pem
           echo $GEMINI_KEY_RSA > gemini-key.rsa
+          ls -hl
         env:
           GEMINI_CERT_PEM: ${{ secrets.GEMINI_CERT_PEM }}
           GEMINI_KEY_RSA: ${{ secrets.GEMINI_KEY_RSA }}
