@@ -71,7 +71,7 @@ func LatestLogsText() (string, error) {
 }
 
 func LatestLogs() ([]Log, error) {
-	rows, err := globalDB.Query(`SELECT url, gemini, time FROM visits ORDER BY time ASC LIMIT 50`)
+	rows, err := globalDB.Query(`SELECT url, gemini, time FROM visits ORDER BY time DESC LIMIT 50`)
 	if err != nil {
 		return nil, err
 	}
