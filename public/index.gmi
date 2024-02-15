@@ -15,8 +15,8 @@ Some small packages on GitHub I made
 => https://github.com/karelbilek/template-parse-recursive template-parse-recursive
 => https://pkg.go.dev/github.com/karelbilek/template-parse-recursive (go doc)
 
-template-parse-recursive is a tool to recursively parse html/txt templates in subfolders, as the default behaviour
-for go's ParseFiles is to lump them all together as if they were in one folder.
+template-parse-recursive is a tool to recursively parse html/txt templates in subfolders, as the default behaviour for go's ParseFiles is to lump them all together as if they were in one folder.
+
 
 ## Some posts
 
