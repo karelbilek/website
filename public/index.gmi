@@ -8,6 +8,16 @@ My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic. 
 
 I am also on Facebook and LinkedIn. Finding me there is left as an exercise to the reader.
 
+## Go projects
+
+Some small packages on GitHub I made
+
+=> https://github.com/karelbilek/template-parse-recursive template-parse-recursive
+=> https://pkg.go.dev/github.com/karelbilek/template-parse-recursive (go doc)
+
+template-parse-recursive is a tool to recursively parse html/txt templates in subfolders, as the default behaviour
+for go's ParseFiles is to lump them all together as if they were in one folder.
+
 ## Some posts
 
 => things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
