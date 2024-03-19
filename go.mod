@@ -1,6 +1,6 @@
 module github.com/karelbilek/website
 
-go 1.18
+go 1.22
 
 require (
 	git.sr.ht/~adnano/go-gemini v0.2.3

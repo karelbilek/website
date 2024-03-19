@@ -3,6 +3,7 @@ package main
 // (C) 2022 Drew Devault, see https://git.sr.ht/~sircmpwn/kineto
 import (
 	"context"
+	"embed"
 	"fmt"
 	"html/template"
 	"io"
@@ -414,6 +415,9 @@ var comicsBundlejs []byte
 //go:embed chronocomics/dist/index.html
 var comicsIndex []byte
 
+//go:embed static/*
+var f embed.FS
+
 func mainProxy() {
 	var (
 		css      string = defaultCSS
@@ -424,6 +428,8 @@ func mainProxy() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	http.Handle("GET /static/", http.FileServerFS(f))
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

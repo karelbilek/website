@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/static/svelte-repro/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link rel="modulepreload" href="/static/svelte-repro/app/immutable/entry/start.DSEEgsMJ.js">
+		<link rel="modulepreload" href="/static/svelte-repro/app/immutable/chunks/entry.B0qghFZL.js">
+		<link rel="modulepreload" href="/static/svelte-repro/app/immutable/chunks/scheduler.BvLojk_z.js">
+		<link rel="modulepreload" href="/static/svelte-repro/app/immutable/entry/app.BPIsRPcj.js">
+		<link rel="modulepreload" href="/static/svelte-repro/app/immutable/chunks/index.CLWgwnfY.js">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_o0pty4 = {
+						base: "/static/svelte-repro",
+						assets: "/static/svelte-repro"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/static/svelte-repro/app/immutable/entry/start.DSEEgsMJ.js"),
+						import("/static/svelte-repro/app/immutable/entry/app.BPIsRPcj.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
