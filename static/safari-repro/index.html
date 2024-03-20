@@ -1,0 +1,31 @@
+<html>
+<body>
+
+<form action="/echo-post" method="post">
+    <input type="number" id="number_input" name="number_input"><br>
+    <input type="text" id="text_input" name="text_input"><br>
+    <button type="submit">Submit</button>
+</form>
+<textarea rows="50"></textarea>
+
+<script>
+    const ta = document.getElementsByTagName("textarea")[0]
+    // a crude hack to show all events of an object in textarea
+    // (equivalent of monitorEvents in console)
+    function monitorMyEvents(input, kind) {
+        for (const key in input) {
+            if (key.slice(0, 2) === 'on') {
+                const eventName = key.slice(2);
+                input.addEventListener(eventName, event => {
+                    ta.value = kind+" "+eventName+"\n"+ta.value
+                    console.log(event.type);
+                });
+            }
+        }
+    }
+    monitorMyEvents(document.forms[0], "form")
+    monitorMyEvents(document.forms[0][0], "number")
+    monitorMyEvents(document.forms[0][1], "text")
+</script>
+</body>
+</html>

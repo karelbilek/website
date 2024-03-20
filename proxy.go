@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
@@ -428,6 +429,16 @@ func mainProxy() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	http.HandleFunc("POST /echo-post", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Fprintf(w, "error on parsing form: %+v", err)
+			return
+		}
+		js, _ := json.MarshalIndent(r.Form, "", "   ")
+		w.Write(js)
+	})
 
 	http.Handle("GET /static/", http.FileServerFS(f))
 
