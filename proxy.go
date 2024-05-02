@@ -441,6 +441,7 @@ func mainProxy() {
 	})
 
 	http.Handle("GET /static/", http.FileServerFS(f))
+	http.Handle("GET data.karelbilek.com/", http.FileServerFS(f))
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
