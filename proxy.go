@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"log"
 	"mime"
 	"net/http"
@@ -441,7 +442,13 @@ func mainProxy() {
 	})
 
 	http.Handle("GET /static/", http.FileServerFS(f))
-	http.Handle("GET data.karelbilek.com/", http.FileServerFS(f))
+
+	subfs, err := fs.Sub(f, "static")
+
+	if err != nil {
+		panic(err)
+	}
+	http.Handle("GET data.karelbilek.com/", http.FileServerFS(subfs))
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
