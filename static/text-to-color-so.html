@@ -1,0 +1,40 @@
+<html>
+    <body>
+
+        <style>
+.box {
+    background: blue;
+    width: 80px;
+    height: 70px;
+}
+        </style>
+        <input type="text" id="text_input" name="text_input"><br>
+        <br>
+        <br>
+        <div id="box" class="box" ></div>
+<script>
+
+const stringToColour = (str) => {
+  let hash = 0;
+  str.split('').forEach(char => {
+    hash = char.charCodeAt(0) + ((hash << 5) - hash)
+  })
+  let colour = '#'
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff
+    colour += value.toString(16).padStart(2, '0')
+  }
+  return colour
+}
+
+c = function () {
+  document.querySelector(".box").style.background = stringToColour(document.querySelector("input").value)
+}
+document.querySelector("input").addEventListener("keydown",c)
+document.querySelector("input").addEventListener("change",c)
+document.querySelector("input").addEventListener("keyup",c)
+
+</script>
+
+    </body>
+</html>
