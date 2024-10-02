@@ -1,0 +1,29 @@
+<html>
+    <body>
+
+        <style>
+.box {
+    background: blue;
+    width: 80px;
+    height: 70px;
+}
+        </style>
+        <input type="text" id="text_input" name="text_input"><br>
+        <br>
+        <br>
+        <div id="box" class="box" ></div>
+<script>
+c = function () {
+  let filter = ''
+  const hueRotate = document.querySelector("input").value.split('').reduce((acc, curr) => acc + curr.codePointAt(0), 0);
+  filter += 'hue-rotate('+(hueRotate%360)+'deg) ';
+  document.querySelector(".box").style.filter = filter
+}
+document.querySelector("input").addEventListener("keydown",c)
+document.querySelector("input").addEventListener("change",c)
+document.querySelector("input").addEventListener("keyup",c)
+
+</script>
+
+    </body>
+</html>
