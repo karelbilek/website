@@ -384,7 +384,7 @@ func proxyGemini(req gemini.Request, external bool, root *url.URL,
 		return
 	}
 
-	str := "I am thinking what is the point of running gemini srever. If you are reading this on gemini, can you drop me a mail on kb@karelbilek.com ?"
+	str := "I am thinking what is the point of running gemini server. If you are reading this on gemini, can you drop me a mail on kb@karelbilek.com ?"
 	all = bytes.ReplaceAll(all, []byte(str), nil)
 
 	var title bool
