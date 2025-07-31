@@ -2,6 +2,8 @@
 
 2022-04-18
 
+<GMI>
+
 In my job, I needed to programatically fill PDFs forms in go. What's hard about that, right!
 
 => https://github.com/karelbilek/fillpdf (In the end, the result is here, but it is just a go wrapper around java wrapper, that pretends it's a C++ wrapper around a java library...)

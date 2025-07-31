@@ -2,6 +2,8 @@
 
 2021-11-16
 
+<GMI>
+
 Every time I mention this to other gophers, I got ugly looks. For whatever reason, labels are shunned in go land.
 
 But I just think that cleanly naming the loop you are breaking/continuing is *always* more readable? See these two examples

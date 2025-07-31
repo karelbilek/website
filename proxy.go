@@ -2,6 +2,7 @@ package main
 
 // (C) 2022 Drew Devault, see https://git.sr.ht/~sircmpwn/kineto
 import (
+	"bytes"
 	"context"
 	"embed"
 	"encoding/json"
@@ -376,8 +377,18 @@ func proxyGemini(req gemini.Request, external bool, root *url.URL,
 		Root:        root,
 	}
 
+	all, err := io.ReadAll(resp.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadGateway)
+		fmt.Fprintf(w, "oopsie woopsie uwu")
+		return
+	}
+
+	str := "I am thinking what is the point of running gemini srever. If you are reading this on gemini, can you drop me a mail on kb@karelbilek.com ?"
+	all = bytes.ReplaceAll(all, []byte(str), nil)
+
 	var title bool
-	gemini.ParseLines(resp.Body, func(line gemini.Line) {
+	gemini.ParseLines(bytes.NewReader(all), func(line gemini.Line) {
 		gemctx.Lines = append(gemctx.Lines, line)
 		if !title {
 			if h, ok := line.(gemini.LineHeading1); ok {

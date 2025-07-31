@@ -1,5 +1,7 @@
 Hello.
 
+<GMI>
+
 My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic. I am a Roman Catholic.
 
 ## Contact

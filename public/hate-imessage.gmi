@@ -2,6 +2,8 @@
 
 2021-11-16
 
+<GMI>
+
 As much as I like Apple ecosystem in some ways, at least compared to all the alternatives, iMessage is truly incomprehensible to me.
 
 Compared to all other messengers and messaging systems, I can never figure out what messages go through SMS, why some mysteriously aren't received, which of my 2 numbers (I use dual sim iPhone imported from China; it's the best thing, don't let Apple tell you otherwise) actually sent it.

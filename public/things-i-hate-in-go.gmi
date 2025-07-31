@@ -2,6 +2,8 @@
 
 2020-03-17
 
+<GMI>
+
 I like go. As a code soldier, I want to write in Go. I like the direction Go is going and evolving.
 
 That being said, personally, there are things I absolutely hate in go. I will write them down, cause why not.

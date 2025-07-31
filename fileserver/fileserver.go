@@ -3,6 +3,7 @@
 package fileserver
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -55,6 +56,9 @@ func Serve(root fs.FS) func(w gemini.ResponseWriter, r *gemini.Request) {
 			w.WriteHeader(gemini.StatusNotFound, "oopsie woopsie!! UwU")
 			return
 		}
+
+		str := "I am thinking what is the point of running gemini srever. If you are reading this on gemini, can you drop me a mail on kb@karelbilek.com ?"
+		body = bytes.ReplaceAll(body, []byte("<GMI>"), []byte(str))
 
 		w.WriteHeader(gemini.StatusSuccess, mimeType)
 		w.Write(body)
