@@ -10,8 +10,8 @@ processes = []
   destination = "/app/data"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/go"]
+  builder = "paketobuildpacks/builder-jammy-base"
+  buildpacks = ["docker.io/paketobuildpacks/go"]
 
 [env]
   PORT = "8080"
