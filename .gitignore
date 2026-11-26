@@ -3,3 +3,8 @@ gemini-key.rsa
 megamonkey.tar.gz
 *.db
 .DS_Store
+
+
+# Added by cargo
+
+/target

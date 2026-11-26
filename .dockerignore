@@ -1,0 +1,7 @@
+.git
+target
+data
+chronocomics/node_modules
+chronocomics/src
+chronocomics/extractor
+.github
