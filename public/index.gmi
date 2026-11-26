@@ -22,10 +22,10 @@ template-parse-recursive is a tool to recursively parse html/txt templates in su
 
 ## Some posts
 
-=> things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
 => rant-pdfs.gmi 2022-04-18 Rant about PDFs
 => hate-imessage.gmi 2021-11-16 iMessage is horrible
 => go-labels.gmi 2021-11-16 I proudly use labels with go loops
+=> things-i-hate-in-go.gmi 2020-03-17 Things I hate in go
 
 ## Past
 
