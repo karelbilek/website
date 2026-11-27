@@ -46,6 +46,12 @@ pub fn parse(src: &str) -> Vec<Line<'_>> {
         .collect()
 }
 
+fn is_image(url: &str) -> bool {
+    let path = url.split(['?', '#']).next().unwrap_or("");
+    let ext = path.rsplit('.').next().unwrap_or("").to_ascii_lowercase();
+    matches!(ext.as_str(), "png" | "jpg" | "jpeg" | "gif" | "webp" | "avif" | "svg")
+}
+
 fn anchor(heading: &str) -> String {
     let mut out = String::new();
     for c in heading.chars() {
@@ -82,7 +88,17 @@ pub fn to_html(src: &str) -> String {
             Line::Text(t) => writeln!(b, "<p>{}</p>", text(t)).unwrap(),
             Line::Link { url, name } => {
                 let name = if name.is_empty() { url } else { name };
-                writeln!(b, "<p><a href=\"{}\">{}</a></p>", attr(url), text(name)).unwrap()
+                if is_image(url) {
+                    // closed <details> plus lazy img: nothing is fetched until clicked
+                    writeln!(
+                        b,
+                        "<details><summary>\u{1f5bc}\u{fe0f} {}</summary><img src=\"{}\" alt=\"{}\" loading=\"lazy\" style=\"max-width:100%\"></details>",
+                        text(name), attr(url), attr(name)
+                    )
+                    .unwrap()
+                } else {
+                    writeln!(b, "<p><a href=\"{}\">{}</a></p>", attr(url), text(name)).unwrap()
+                }
             }
             Line::Heading(n, t) => {
                 writeln!(b, "<h{n} id=\"{}\">{}</h{n}>", anchor(t), text(t)).unwrap()
@@ -162,5 +178,8 @@ mod tests {
         assert!(html.contains("<p>text &lt;b&gt;</p>"));
         assert!(html.contains("<pre aria-label=\"alt\">\n# not heading\n</pre>"));
         assert!(html.contains("<blockquote>q</blockquote>"));
+        let img = to_html("=> pie.PNG A pie");
+        assert!(img.contains("<summary>\u{1f5bc}\u{fe0f} A pie</summary><img src=\"pie.PNG\" alt=\"A pie\" loading=\"lazy\""));
+        assert!(!is_image("foo.gmi") && is_image("x/y.webp?v=1"));
     }
 }
