@@ -143,6 +143,12 @@ body {{
 	padding: 1rem 2rem;
 	font-family: 'Helvetica', 'Arial', sans-serif;
 }}
+summary {{
+	cursor: pointer;
+	color: -webkit-link;
+	color: LinkText;
+	text-decoration: underline;
+}}
 </style>
 </head>
 <body>
