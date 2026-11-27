@@ -1,27 +1,17 @@
 Hello.
 
-<GMI>
-
 My name is Karel Bílek. I am an IT Engineer. I am from Prague, Czech Republic. I am a Roman Catholic.
 
 ## Contact
 
 => mailto:kb@karelbilek.com e-mail
 
-I am also on Facebook and LinkedIn. Finding me there is left as an exercise to the reader.
-
-## Go projects
-
-Some small packages on GitHub I made
-
-=> https://github.com/karelbilek/template-parse-recursive template-parse-recursive
-=> https://pkg.go.dev/github.com/karelbilek/template-parse-recursive (go doc)
-
-template-parse-recursive is a tool to recursively parse html/txt templates in subfolders, as the default behaviour for go's ParseFiles is to lump them all together as if they were in one folder.
+I am also on Facebook, LinkedIn, GitHub. Finding me there is left as an exercise to the reader.
 
 
-## Some posts
+## Blog
 
+=> 2026-11-27-restart.gmi 2026-11-27 Blog restart
 => rant-pdfs.gmi 2022-04-18 Rant about PDFs
 => hate-imessage.gmi 2021-11-16 iMessage is horrible
 => go-labels.gmi 2021-11-16 I proudly use labels with go loops

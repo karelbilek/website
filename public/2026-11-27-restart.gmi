@@ -1,0 +1,77 @@
+# blog restart
+
+2026-11-27
+
+Well. I will probably start writing here again.
+
+### LLM-pilled
+
+I was deeply skeptical about using LLMs for programming up until last year. With the earlier models, programming was just unusable. I also take pride with my coding; my mantra was along the lines - "I want to learn things. You don't actually learn things if you take shortcuts. Ideas are worthless. Execution matters."
+
+I tried to vibe-code a iOS app. I was annoyed with substack etc. newsletter reading experience; most of the apps forget what you were reading and what position you were in the minute the app closes. What is even the point of a dedicated substack-reading app, when the minute OS decides to kill it, it forgets everything and shows me the homepage.
+
+So I tried to vibe-code a simple newletter-reading app that does that.
+
+Codex at that point couldn't even get the GMail login to work, which is a simple oauth. Worthless.
+
+It changed when they put out Fable. (And whatever OpenAI did at that time.)
+
+Fable just worked. Or maybe it was the ChatGPT equivalent at that time; I honestly cannot be bothered to remember ChatGPT versions.
+
+I gave it a task. It made me a newsletter reading app, that reads e-mails from GMail and never forgets your reading location. I still use it. Well, I don't; I started using Android; but that's for another blogpost.
+
+I cannot put it to App Store, because GMail has this stupid audit scheme, where you need to actually audit your app each year to have access to GMail API, you need to audit that you store backend data safely, *even if your app stores nothing on a backend*. The official Google documents are contradictory if you need this (expensive!) attestation for a local-only app; but I don't have time to deal with Google crap. So you won't get my app. Tough. 
+=> https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification
+=> https://discuss.google.dev/t/gmail-restricted-scope-is-the-casa-assessment-required-when-mail-is-processed-on-device-and-only-a-derived-subscription-list-reaches-our-server/398372
+
+I started using LLMs heavily around that time.
+
+### This site
+
+This site was always hacked together. I never had time for it, so, I never changed much here. The backend is running on a free Fly.io tier. It was a simple Go server, that serves Gemini (Gemini a simple online protocol, nothing with Google's LLMs); and it had an annoying proxy from Gemini to HTML copied from kineto project. The problem with this proxy is that you run a Gemini server, and then next to it, run a HTTP server and that reads Gemini, and it's just a bit over-engineered and annoying.
+
+=> https://sr.ht/~sircmpwn/kineto/
+
+Well, now I said to Claude to "rewrite it in rust" and fix various bugs I had with stupid Paketo. Well. It works now.
+
+It serves things in both Gemini and HTML directly without the proxy bit. It has all my stupid weird functionalities, like storing visited URL and showing them online. You can see the visits on my website here
+
+=> https://karelbilek.com/visits.txt
+
+### Obsidian plugin
+
+More importantly, LLMs made me a simple Obsidian plugin for Gemtext. So I put it here
+
+=> https://community.obsidian.md/plugins/gemtext
+
+it's now ridiculously easy to edit GMI in Obsidian. I... kind of love it?
+
+The scary thing is - I had this idea before LLMs. Gemtext is *far easier* to parse than Markdown; Markdown is a *horrible* format for parsing. I made some stupid MRs fixing yuin/goldmark before - it's ridiculously hard and ambiguous, even with CommonMark. So Gemtext is simpler? But I was scared of the complexity.
+
+And it turned out I was right! When I asked Claude to do it, the actual parser was relatively easy
+=> https://github.com/karelbilek/gemtext-obsidian/blob/master/gemtext.ts
+
+the actual plugin is... something? I literally have no idea what any of this does
+=> https://github.com/karelbilek/gemtext-obsidian/blob/master/main.ts
+
+yet I "made" it with around 3 prompts.
+
+Now should I have actually gotten deeply into Codemirror architecture? Should I have learned about the inner workings of this one concrete JS editor and learned more about the state handling? I guess. I would be smarter and could tell you more about how code editors even work.
+
+But. I had no time for that for 2 years since I had that idea. Now I just... have it. And write. That's great. Get it here folks!
+
+=> https://community.obsidian.md/plugins/gemtext
+
+### but what about the environment
+
+I donno
+
+I think the inference cost used to make this is costing less CO2 than what I would use if I needed to think about it. I could never ever write that... something... that exists in the main.ts.
+
+I donno about the CO2 cost of training. I think when the current craze goes down, the training/inference costs will be reflected in the cost of the actual product, and prices will roughly correlate with energy usage. So far it all costs ~nothing (on the sub plan), so, what do I know
+
+### who even reads this
+
+I think nobody.
+
+I am a bit tired of social media; the only one I actively use is X, and even that is crazy. So. Let's try to write here instead. Maybe someone will read this eventually. 
